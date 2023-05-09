@@ -1,0 +1,32 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Install Apache packages
+      yum:
+        name: 
+          - httpd
+          - httpd-devel
+        state: present
+
+    - name: Copy config files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0644
+     #with_items are our variables being called aboved. item.src and item.dest they will run in a loop till all items are called!
+      with_items: 
+        - src: httpd.conf
+          dest: /etc/httpd/conf/httpd.conf 
+
+        - src: httpd-vhosts.conf 
+          dest: /etc/httpd/conf/httpd.conf
+
+    - name: Start apache and configure run at boot time
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+   
